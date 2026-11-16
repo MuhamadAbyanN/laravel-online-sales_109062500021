@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ShippingServiceController;
 use App\Http\Controllers\Admin\StockController;
@@ -40,9 +42,9 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
-// Panel Admin (M2 & M3)
+// Panel Admin (M2, M3, M7)
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/', fn () => view('placeholder', ['title' => 'Dashboard Admin (sementara)']))->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // M2 Master kategori dan produk
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -51,13 +53,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
     Route::resource('products', AdminProductController::class)->except('show');
 
-    // M3 Stok & Ekspedisi
+    // M3 Barang masuk dan histori stok
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::get('/stock/create', [StockController::class, 'create'])->name('stock.create');
     Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
 
+    // M3 Layanan ekspedisi
     Route::get('/shipping', [ShippingServiceController::class, 'index'])->name('shipping.index');
     Route::post('/shipping', [ShippingServiceController::class, 'store'])->name('shipping.store');
     Route::put('/shipping/{shippingService}', [ShippingServiceController::class, 'update'])->name('shipping.update');
     Route::delete('/shipping/{shippingService}', [ShippingServiceController::class, 'destroy'])->name('shipping.destroy');
+
+    // M7 Transaksi admin
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+    Route::patch('/orders/{order}/confirm', [AdminOrderController::class, 'confirm'])->name('orders.confirm');
+    Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
+    Route::patch('/orders/{order}/cancel', [AdminOrderController::class, 'cancel'])->name('orders.cancel');
 });
