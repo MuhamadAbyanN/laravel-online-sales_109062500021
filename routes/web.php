@@ -5,12 +5,20 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ShippingServiceController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductCatalogController;
 use Illuminate\Support\Facades\Route;
 
 // Katalog Publik (M4)
 Route::get('/', [ProductCatalogController::class, 'index'])->name('shop.index');
 Route::get('/products/{product:slug}', [ProductCatalogController::class, 'show'])->name('shop.show');
+
+// Keranjang Belanja (M5)
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+Route::patch('/cart/update/{product}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 // Autentikasi
 Route::middleware('guest')->group(function () {
